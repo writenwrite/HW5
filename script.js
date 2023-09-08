@@ -74,3 +74,4 @@ function tambahPendaftar() {
 
 // Tampilkan tab Registrasi saat halaman dimuat
 openTab("Registrasi");
+

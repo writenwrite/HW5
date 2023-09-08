@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Pendaftaran</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .tab {
+            overflow: hidden;
+        }
+
+        .tab button {
+            background-color: #ffa500;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .tab button.active {
+            background-color: #008000;
+        }
+
+        .content {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+
+        .table-container {
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        #resume {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #008000;
+        }
+    </style>
+</head>
+<body>
+    <div class="tab">
+        <button class="tablinks" onclick="openTab(event, 'Registrasi')">Registrasi</button>
+        <button class="tablinks" onclick="openTab(event, 'ListPendaftar')">List Pendaftar</button>
+    </div>
+
+    <!-- Tab Registrasi -->
+    <div id="Registrasi" class="content">
+        <h2>Form Registrasi</h2>
+        <form id="registrationForm">
+            <label for="nama">Nama (Minimal 10 karakter):</label>
+            <input type="text" id="nama" required minlength="10"><br><br>
+
+            <label for="umur">Umur (Minimal 25 tahun):</label>
+            <input type="number" id="umur" required min="25"><br><br>
+
+            <label for="uangSangu">Uang Sangu (Minimal 100 ribu dan maksimal 1 juta):</label>
+            <input type="number" id="uangSangu" required min="100000" max="1000000"><br><br>
+
+            <button type="button" onclick="tambahPendaftar()">Submit</button>
+        </form>
+    </div>
+
+    <!-- Tab List Pendaftar -->
+    <div id="ListPendaftar" class="content">
+        <h2>List Pendaftar</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nama</th>
+                        <th>Umur</th>
+                        <th>Uang Sangu</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body"></tbody>
+            </table>
+        </div>
+        <p id="resume"></p>
+    </div>
+
+    <script>
+        // Fungsi untuk membuka tab
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        // Fungsi untuk menambahkan pendaftar ke tabel
+        function tambahPendaftar() {
+            var nama = document.getElementById("nama").value;
+            var umur = parseInt(document.getElementById("umur").value);
+            var uangSangu = parseInt(document.getElementById("uangSangu").value);
+
+            if (nama.length < 10 || umur < 25 || uangSangu < 100000 || uangSangu > 1000000) {
+                alert("Data tidak memenuhi kriteria!");
+                return;
+            }
+
+            var tableBody = document.getElementById("table-body");
+            var newRow = tableBody.insertRow();
+            var cell1 = newRow.insertCell(0);
+            var cell2 = newRow.insertCell(1);
+            var cell3 = newRow.insertCell(2);
+
+            cell1.innerHTML = nama;
+            cell2.innerHTML = umur;
+            cell3.innerHTML = uangSangu;
+
+            var pendaftarRows = tableBody.getElementsByTagName("tr");
+            var resume = document.getElementById("resume");
+            var rataRata = hitungRataRata(Array.from(pendaftarRows).map(row => {
+                var cells = row.getElementsByTagName("td");
+                return {
+                    nama: cells[0].innerText,
+                    umur: parseInt(cells[1].innerText),
+                    uangSangu: parseInt(cells[2].innerText)
+                };
+            }));
+
+            resume.innerHTML = `Rata-rata pendaftar memiliki uang sangu sebesar ${rataRata.rataRataUangSangu} dengan rata-rata umur ${rataRata.rataRataUmur}`;
+            
+            // Reset nilai input
+            document.getElementById("nama").value = "";
+            document.getElementById("umur").value = "";
+            document.getElementById("uangSangu").value = "";
+        }
+
+        // Fungsi untuk menghitung rata-rata
+        function hitungRataRata(pendaftar) {
+            var totalUangSangu = 0;
+            var totalUmur = 0;
+
+            for (var i = 0; i < pendaftar.length; i++) {
+                totalUangSangu += pendaftar[i].uangSangu;
+                totalUmur += pendaftar[i].umur;
+            }
+
+            var rataRataUangSangu = totalUangSangu / pendaftar.length;
+            var rataRataUmur = totalUmur / pendaftar.length;
+
+            return {
+                rataRataUangSangu: rataRataUangSangu.toFixed(2),
+                rataRataUmur: rataRataUmur.toFixed(2),
+            };
+        }
+    </script>
+</body>
+</html>
